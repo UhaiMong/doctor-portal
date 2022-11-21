@@ -19,7 +19,7 @@ const AppointmentBanner = ({ selectedDate,setSelectedDate }) => {
                         selected={selectedDate}
                         onSelect={setSelectedDate}
                     />
-                    <p>You have selected: {format(selectedDate, 'PP')}</p>
+                    <p className='text-xl text-primary font-bold'>Today: {format(selectedDate, 'PP')}</p>
                 </div>
                 <div>
                     <img src={chair} alt="Appointment chair" className="rounded-lg" />

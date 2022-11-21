@@ -42,7 +42,8 @@ const Testimonials = () => {
             </div>
             <div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-14'>
                 {
-                    patientsComments.map(patient => <Testimonial
+                    patientsComments &&   
+                    patientsComments?.map(patient => <Testimonial
                         key={patient.id}
                         patient={patient}
                     ></Testimonial>)

@@ -5,7 +5,7 @@ import BookingModal from '../BookingModal/BookingModal';
 import { useQuery } from '@tanstack/react-query';
 import LoadingSpiner from '../../../Components/LoadingSpiner';
 
-const AvailableAppointment = ({ selectedDate,setSelectedDate }) => {
+const AvailableAppointment = ({ selectedDate, setSelectedDate }) => {
 
     // const [availableSlots, setAvailableSlots] = useState([]);
 
@@ -13,39 +13,40 @@ const AvailableAppointment = ({ selectedDate,setSelectedDate }) => {
     const date = format(selectedDate, 'PP');
 
 
-    const { data: availableSlots ,isLoading,refetch} = useQuery({
-        queryKey: ['appointmentSlots',date],
+    const { data: availableSlots, isLoading, refetch } = useQuery({
+        queryKey: ['appointmentSlots', date],
         queryFn: async () => {
-            const res = await fetch(`http://localhost:5000/v2/appointmentSlots?date=${date}`);
+            const res = await fetch(`http://localhost:5000/appointmentSlots?date=${date}`);
             const data = await res.json();
-            return data;  
+            return data;
         }
     })
-    if(isLoading) {
-      return <LoadingSpiner></LoadingSpiner>  
+    if (isLoading) {
+        return <LoadingSpiner></LoadingSpiner>
     }
-    
+
     return (
         <div className='mt-6'>
             <h1 className='text-center text-primary text-xl mt-16'>Available Appointments on {format(selectedDate, 'PP')}</h1>
             <div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-9 my-5'>
                 {
-                    availableSlots.map(option => <AvailableSlotCard
+                    availableSlots &&
+                    availableSlots?.map(option => <AvailableSlotCard
                         key={option._id}
                         option={option}
                         setTreatment={setTreatment}
-                        ></AvailableSlotCard>)
-                    }
+                    ></AvailableSlotCard>)
+                }
                 {
                     treatment &&
                     <BookingModal
-                    treatment={treatment}
-                    selectedDate={selectedDate}
-                    setTreatment={setTreatment}
-                    refetch={refetch}
-                >
+                        treatment={treatment}
+                        selectedDate={selectedDate}
+                        setTreatment={setTreatment}
+                        refetch={refetch}
+                    >
 
-                </BookingModal>}
+                    </BookingModal>}
             </div>
         </div>
     );

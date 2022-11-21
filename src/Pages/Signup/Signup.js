@@ -3,29 +3,39 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Context/Authprovider';
+import useToken from '../../hooks/useToken';
 
 const Signup = () => {
     const { createUser, updateUser, googleSignin } = useContext(AuthContext);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [signUpError, setSignUpError] = useState('');
+    const [createUserEmail, setCreateUserEmail] = useState('');
+    const [token] = useToken(createUserEmail);
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
-    const handleToSignup = data => {
+    if (token) {
+        navigate(from, { replace: true });
+    }
+
+    // signUp handler.........
+
+    const handleToSignup = (data) => {
         setSignUpError('');
-        console.log(data);
         createUser(data.email, data.password)
             .then(result => {
                 const user = result.user;
                 console.log(user);
                 toast("User created successfully");
+
                 const userInfo = {
                     displayName: data.name,
                 }
+
                 updateUser(userInfo)
                     .then(() => {
-                        navigate(from, { replace: true });
-                     })
+                        saveUser(data.email, data.name);
+                    })
                     .catch(error => console.error(error))
             })
             .catch(error => {
@@ -33,6 +43,8 @@ const Signup = () => {
                 setSignUpError(error.message)
             })
     }
+
+    // google signIn
     const handleGoogleSignIn = () => {
         googleSignin()
             .then(result => {
@@ -41,6 +53,37 @@ const Signup = () => {
             })
             .catch(error => console.error(error))
     }
+
+
+    // create user collections
+
+    const saveUser = (email, name) => {
+        const user = { email, name };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                setCreateUserEmail(email);
+            })
+    }
+
+    // getting user token from server
+
+    const getUserToken = (email) => {
+        fetch(`http://localhost:5000/jwt?email=${email}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.accessToken) {
+                    localStorage.setItem('Token', data.accessToken);
+                }
+            })
+    }
+
     return (
         <div className='h-[800] w-3/12 mx-auto flex justify-center items-center shadow-2xl'>
             <div>

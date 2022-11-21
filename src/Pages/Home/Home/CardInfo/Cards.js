@@ -31,7 +31,8 @@ const Cards = () => {
     return (
         <div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 mt-4 gap-6'>
             {
-                cardData.map(card => <Card
+                cardData &&
+                cardData?.map(card => <Card
                     key={card.id}
                     card={card}
                 ></Card>)
