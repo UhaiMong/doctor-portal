@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import LoadingSpiner from '../../../Components/LoadingSpiner';
+import ConfirmationModal from '../../Shared/ConfirmationModal/ConfirmationModal';
 
 const AllUsers = () => {
+    const [deleteUser, setDeleteUser] = useState(null);
     const { data: users, isLoading, refetch } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
@@ -16,7 +18,7 @@ const AllUsers = () => {
         return <LoadingSpiner />
     }
 
-    const hadleAdmin = (id) => {
+    const handleAdmin = (id) => {
         fetch(`http://localhost:5000/users/admin/${id}`, {
             method: 'PUT',
             headers: {
@@ -33,6 +35,30 @@ const AllUsers = () => {
                 console.log(data);
             })
     }
+    if (isLoading) {
+        return <LoadingSpiner />
+    }
+
+    const closeModal = () => {
+        setDeleteUser(null);
+    }
+
+    const handleUserDelete = (user) => {
+        console.log(user);
+        fetch(`http://localhost:5000/users/${user?._id}`, {
+            method: 'DELETE',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('Token')}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                toast.success(`You have deleted ${user?.name} successfully`);
+                refetch();
+            })
+    }
+
     return (
         <div>
             <h1 className='text-3xl font-semibold'>All Users: {users?.length}</h1>
@@ -56,15 +82,41 @@ const AllUsers = () => {
                                 <th>{index + 1}</th>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
-                                <td>{
-                                    user?.role !== 'admin' &&
-                                    <button onClick={() => hadleAdmin(user._id)} className='text-xs btn btn-outline btn-xs'>Admin</button>}</td>
-                                <td title='Delete'><button className='btn btn-ghost rounded-full btn-xs text-red-800'>X</button></td>
+
+                                <td>
+                                    {
+                                        user?.role !== 'admin' &&
+                                        <button onClick={() => handleAdmin(user._id)} className='text-xs btn btn-outline btn-xs'>Make Admin</button>
+                                    }
+                                </td>
+                                <td title='Delete'>
+                                    {
+                                        user?.role !== 'admin' &&
+                                        <label
+                                            onClick={() => setDeleteUser(user)} htmlFor="confirmation-modal"
+                                            className=" text-red-600 p-1 font-bold cursor-pointer">
+                                            X
+                                        </label>
+                                    }
+                                </td>
                             </tr>)
                         }
                     </tbody>
                 </table>
             </div>
+            {
+                deleteUser &&
+                <ConfirmationModal
+                    message={`After deleting ${deleteUser.name}, will not be recovered.`}
+                    title={`Are you sure want to delete?`}
+                    closeModal={closeModal}
+                    modalData={deleteUser}
+                    deleteButton={'Yes'}
+                    successAction={handleUserDelete}
+                >
+
+                </ConfirmationModal>
+            }
         </div>
     );
 };

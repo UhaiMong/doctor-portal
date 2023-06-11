@@ -6,6 +6,7 @@ import { AuthContext } from '../../Context/Authprovider';
 import useToken from '../../hooks/useToken';
 
 const Signup = () => {
+
     const { createUser, updateUser, googleSignin } = useContext(AuthContext);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [signUpError, setSignUpError] = useState('');
@@ -14,6 +15,7 @@ const Signup = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || '/';
+    
     if (token) {
         navigate(from, { replace: true });
     }
@@ -68,24 +70,25 @@ const Signup = () => {
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setCreateUserEmail(email);
             })
     }
 
     // getting user token from server
 
-    const getUserToken = (email) => {
-        fetch(`http://localhost:5000/jwt?email=${email}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.accessToken) {
-                    localStorage.setItem('Token', data.accessToken);
-                }
-            })
-    }
+    // const getUserToken = (email) => {
+    //     fetch(`http://localhost:5000/jwt?email=${email}`)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if (data.accessToken) {
+    //                 localStorage.setItem('Token', data.accessToken);
+    //             }
+    //         })
+    // }
 
     return (
-        <div className='h-[800] w-3/12 mx-auto flex justify-center items-center shadow-2xl'>
+        <div className='h-[800] w-full md:w-1/2 mx-auto flex justify-center items-center shadow-2xl'>
             <div>
                 <h1 className='text-2xl font-semibold text-center'>Signup</h1>
                 <form onSubmit={handleSubmit(handleToSignup)}>

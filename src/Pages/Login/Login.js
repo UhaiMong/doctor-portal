@@ -53,7 +53,7 @@ const Login = () => {
             .catch(error => console.error(error))
     }
     return (
-        <div className='h-[800] w-3/12 mx-auto flex justify-center items-center shadow-2xl my-10'>
+        <div className='h-[800] w-full md:ww-1/2 mx-auto flex justify-center items-center shadow-2xl my-10'>
             <div>
                 <h1 className='text-2xl font-semibold text-center'>Login</h1>
                 <form onSubmit={handleSubmit(handleToLogin)}>

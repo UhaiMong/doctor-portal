@@ -9,7 +9,11 @@ const ManageDoctor = () => {
     const { data: doctors, isLoading, refetch } = useQuery({
         queryKey: ['doctors'],
         queryFn: async () => {
-            const res = await fetch('http://localhost:5000/doctors')
+            const res = await fetch('http://localhost:5000/doctors', {
+                headers: {
+                    authorization:`Bearer ${localStorage.getItem('Token')}`
+                }
+            })
             const data = await res.json();
             return data;
         }

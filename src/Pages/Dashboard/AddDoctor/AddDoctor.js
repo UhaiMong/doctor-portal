@@ -7,11 +7,12 @@ import LoadingSpiner from '../../../Components/LoadingSpiner';
 
 const AddDoctor = () => {
     const imghostkey = process.env.REACT_APP_imbgbb_key;
+    console.log(imghostkey);
 
     const navigate = useNavigate();
 
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const [signUpError, setSignUpError] = useState('');
+    const [signUpError] = useState('');
     const { data: specialties, isLoading } = useQuery({
         queryKey: ['specialty'],
         queryFn: async () => {
@@ -19,7 +20,8 @@ const AddDoctor = () => {
             const data = await res.json();
             return data;
         }
-    })
+    });
+    
     if (isLoading) {
         return <LoadingSpiner />
     }
@@ -28,7 +30,7 @@ const AddDoctor = () => {
 
         const formData = new FormData();
         formData.append('image', image);
-        // const url = `https://api.imgbb.com/1/upload?expiration=600&key=${imghostkey}`
+
 
         fetch(`https://api.imgbb.com/1/upload?key=${imghostkey}`, {
             method: 'POST',
@@ -44,6 +46,7 @@ const AddDoctor = () => {
                         specialty: data.specialty,
                         image: imgData.data.url,
                     }
+
                     // save doctor information to the database
 
                     fetch('http://localhost:5000/doctors', {
@@ -60,10 +63,11 @@ const AddDoctor = () => {
                             toast.success(`${data.name} is added successfully`);
 
                             navigate('/dashboard/mangedoctors');
-                    })
+                        })
                 }
             })
-    }
+    };
+
     return (
         <div className='w-2/5'>
             <h1 className='text-3xl font-semibold'>Add a Doctor</h1>

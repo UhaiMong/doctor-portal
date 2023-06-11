@@ -16,11 +16,12 @@ const AvailableAppointment = ({ selectedDate, setSelectedDate }) => {
     const { data: availableSlots, isLoading, refetch } = useQuery({
         queryKey: ['appointmentSlots', date],
         queryFn: async () => {
-            const res = await fetch(`http://localhost:5000/appointmentSlots?date=${date}`);
+            const res = await fetch(`https://smart-doctor-portal-server.vercel.app/appointmentSlots?date=${date}`);
             const data = await res.json();
             return data;
         }
-    })
+    });
+    
     if (isLoading) {
         return <LoadingSpiner></LoadingSpiner>
     }
